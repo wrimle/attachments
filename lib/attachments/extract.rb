@@ -32,24 +32,23 @@ module Attachments
       @last_parsed = filename
 
       # Load the email
-      mail = Mail.read(filename)
-
-      # To and from is important when sending mail to db
-      @to = mail.to
-
-      @from = mail.from
+      @mail = Mail.read(filename)
 
       # Parse parts recursively until it is not multipart
       # Ignore types that are not suited for forwarding
-      parse_part mail
+      parse_part @mail
     end
 
     def to 
-      @to || nil
+      (@mail && @mail.to) || nil
     end
 
     def from
-      @from || nil
+      (@mail && @mail.from) || nil
+    end
+
+    def subject
+      (@mail && @mail.subject) || nil
     end
 
     def name
@@ -69,15 +68,16 @@ module Attachments
     # Use close
     def reset
       @last_parsed = nil
-      @to = nil
       @name = nil
-      @from = nil
+      @mail = nil
       @files = []
     end
 
     def parse_part mail
       # Filter parts with a type that is not of interest
-      ct, charset = mail.content_type.split(/;/, 2) if mail.content_type
+      if mail.content_type
+        ct, charset = mail.content_type.split(/;/, 2)
+      end
       unless(mail.multipart? || (ct && @include_types.include?(ct)))
         return
       end
@@ -143,7 +143,7 @@ module Attachments
         end
 
         # Save meta-data for further processing
-        @files << { :name => @name, :tmpfile => filepath, :save_as => name, :upload_to => filename, :mime_type => mime_type, :from => @from, :to => @to }
+        @files << { :name => @name, :tmpfile => filepath, :save_as => name, :upload_to => filename, :mime_type => mime_type  }
       end
     end
   end
