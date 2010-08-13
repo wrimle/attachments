@@ -99,16 +99,24 @@ module Attachments
         filename = "#{@name}.#{uuid}"
         filepath = "/tmp/#{filename}" 
 
+
         body = case ct
                when "text/plain" then
                  m = mail.body.decoded
+                 if charset && charset.match(/charset=/i)
+                   charset.gsub!(/charset=/i, "")
+                   charset.strip!
+                 else
+                   charset = nil
+                 end
                  begin
+                   if charset
+                     m.force_encoding(charset)
+                   end
                    m.encode("utf-8")
                  rescue
                    # Ruby 1.8 doesn't know encode
-                   if charset && charset.match(/charset=/i)
-                     charset.gsub!(/charset=/i, "")
-                     charset.strip!
+                   if charset 
                      Iconv.conv("utf-8", charset, m)
                    else
                      m
