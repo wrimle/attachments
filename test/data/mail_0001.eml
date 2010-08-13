@@ -1,0 +1,48 @@
+Return-Path: <rune@epubify.com>
+X-Original-To: posterous@boox.epubify.com
+Delivered-To: posterous@boox.epubify.com
+Received: from mail-gw0-f51.google.com (mail-gw0-f51.google.com [74.125.83.51])
+	by boox (Postfix) with ESMTP id 053CEA8805
+	for <posterous@boox.epubify.com>; Fri, 13 Aug 2010 11:53:59 +0000 (UTC)
+Received: by gwb17 with SMTP id 17so702822gwb.38
+        for <posterous@boox.epubify.com>; Fri, 13 Aug 2010 04:53:40 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 10.151.111.1 with SMTP id o1mr1964300ybm.26.1281700420730; Fri,
+ 13 Aug 2010 04:53:40 -0700 (PDT)
+Received: by 10.150.217.13 with HTTP; Fri, 13 Aug 2010 04:53:40 -0700 (PDT)
+X-Originating-IP: [84.208.65.71]
+Date: Fri, 13 Aug 2010 13:53:40 +0200
+Message-ID: <AANLkTimsuBB4r-9rEW3iUd49hb1EnEyX58+eyxqQyeFs@mail.gmail.com>
+Subject: Test
+From: Rune Myrland <rune@epubify.com>
+To: posterous@boox.epubify.com
+Content-Type: multipart/alternative; boundary=001517576834493df4048db32256
+
+--001517576834493df4048db32256
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+! Overskrift
+
+Litt test.
+
+!! En underoverskrift.
+
+Og s=E5
+
+-. Si noe da!
+
+-. Hva da?
+
+-. Hva som helst?
+
+--001517576834493df4048db32256
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div>! Overskrift<br></div><div><br></div><div>Litt test.</div><div><br></d=
+iv><div>!! En underoverskrift.</div><div><br></div><div>Og s=E5</div><div><=
+br></div><div>-. Si noe da!</div><div><br></div><div>-. Hva da?</div><div>
+<br></div><div>-. Hva som helst?</div><div><br></div>
+
+--001517576834493df4048db32256--

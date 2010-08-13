@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'uuidtools'
+require 'fileutils'
 require 'mail'
 
 
@@ -21,7 +22,7 @@ module Attachments
 
     def close
       files.each do |f|
-        FileUtils::rm(f[:filename])
+        FileUtils::rm(f[:tmpfile])
       end
       reset
     end
@@ -97,9 +98,22 @@ module Attachments
         filename = "#{@name}.#{uuid}"
         filepath = "/tmp/#{filename}" 
 
+        body = case ct
+               when "text/plain" then
+                 m = mail.body.decoded
+                 begin
+                   m.encode("utf-8")
+                 rescue
+                   # Ruby 1.8 doesn't know encode
+                   m
+                 end
+               else
+                 mail.body.decoded
+               end
+
         # Save part as it is of a supported type
         f = File.new(filepath, "wb")
-        f.write(mail.body.decoded)
+        f.write(body)
         f.close
 
         unless File.exists?(filepath)
