@@ -2,6 +2,7 @@ require 'rubygems'
 require 'uuidtools'
 require 'fileutils'
 require 'mail'
+require 'iconv'
 
 
 module Attachments
@@ -76,7 +77,7 @@ module Attachments
 
     def parse_part mail
       # Filter parts with a type that is not of interest
-      ct = mail.content_type.split(/;/, 2)[0] if mail.content_type
+      ct, charset = mail.content_type.split(/;/, 2) if mail.content_type
       unless(mail.multipart? || (ct && @include_types.include?(ct)))
         return
       end
@@ -105,7 +106,13 @@ module Attachments
                    m.encode("utf-8")
                  rescue
                    # Ruby 1.8 doesn't know encode
-                   m
+                   if charset && charset.match(/charset=/i)
+                     charset.gsub!(/charset=/i, "")
+                     charset.strip!
+                     Iconv.conv("utf-8", charset, m)
+                   else
+                     m
+                   end
                  end
                else
                  mail.body.decoded

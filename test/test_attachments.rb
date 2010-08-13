@@ -1,4 +1,5 @@
 require 'helper'
+require 'iconv'
 
 class TestAttachments < Test::Unit::TestCase
   def setup
@@ -29,5 +30,15 @@ class TestAttachments < Test::Unit::TestCase
     tmpfile = @extract.files[0][:tmpfile]
     @extract.close
     assert !File::exists?(tmpfile)
+  end
+
+
+  should "save as text/plain as utf-8" do
+    tmpfile = @extract.files[0][:tmpfile]
+    m = File.read(tmpfile)
+    assert_nothing_raised do
+      # Provoke an exception if not valid utf-8
+      Iconv.conv("ISO-8859-1", "utf-8", m)
+    end
   end
 end
