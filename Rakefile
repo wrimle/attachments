@@ -5,12 +5,14 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "attachments"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
-    gem.email = "rmyrland@gmail.com"
+    gem.summary = %Q{Extract mail parts of specified mime types.}
+    gem.description = %Q{It's original intention is as a helper class class for filtering email attachments before forwarding. The extracted attachments are saved in the /tmp directory.}
+    gem.email = "rune@epubify.com"
     gem.homepage = "http://github.com/wrimle/attachments"
     gem.authors = ["Rune Myrland"]
-    gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
+    gem.add_dependency('mail','>= 2.2.5')
+    gem.add_dependency('uuidtools','>= 2.1.1')
+    #gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new

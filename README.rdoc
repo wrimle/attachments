@@ -1,6 +1,60 @@
 = attachments
 
-Description goes here.
+Extract mail parts of specified mime types.
+
+== DESCRIPTION
+
+It's original intention is as a helper class class for filtering
+email attachments before forwarding. The extracted attachments
+are saved in the /tmp directory.
+
+== FEATURES/PROBLEMS:
+
+Is the /tmp directory and the 'file' shell command on your OS? If not 
+some porting work is needed.
+
+== REQUIREMENTS:
+
+Typedown is presently using the mail and uuidtools ruby gems.
+It uses the 'file' shell command from filemagic to decide mime types
+when they are uncertain.
+
+
+== SYNOPSIS:
+
+    require 'rubygems'
+    require 'attachments'
+
+
+    # Which mime types do you want to accept?
+    extract = Attachments::Extract.new [ "text/plain" ]
+
+    # I make postfix save incoming mails in MailDir, 
+    # then glob that directory
+    INCOMING_MAIL_DIR = "/your/MailDir"
+    mailfiles = Dir.glob(INCOMING_MAIL_DIR + "/*")
+
+    # Process the mails
+    mailfiles.each do |m|
+        # Open mail stored in filename
+        extract.parse m
+        # Traverse through the extracted attachments
+	extract.files.each do |f|
+	    # Do something with the attachments
+	    puts f.inspect
+	    case f[:mime_type]
+            when "text/plain" then
+                puts File.read(f[:tmpfile])
+	    end
+        end
+	# Remove tmp files and prepare for new parsing action
+	extract.close
+
+	# Probably you want to delete or move the processed email
+	# to an archive here
+	# FileUtils::rm(m)
+    end
+
 
 == Note on Patches/Pull Requests
  
