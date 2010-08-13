@@ -1,3 +1,4 @@
+# encoding: UTF-8
 
 class FileMagic
   def self.mime filename

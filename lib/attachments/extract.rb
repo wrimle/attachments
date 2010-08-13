@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'rubygems'
 require 'uuidtools'
 require 'fileutils'
@@ -32,7 +34,13 @@ module Attachments
       @last_parsed = filename
 
       # Load the email
-      @mail = Mail.read(filename)
+      m = File.read(filename)
+      begin
+        m.force_encoding("UTF-8")
+      rescue
+        # force_encoding not supported in ruby 1.8
+      end
+      @mail = Mail.new(m)
 
       # Parse parts recursively until it is not multipart
       # Ignore types that are not suited for forwarding
