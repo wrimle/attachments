@@ -13,6 +13,9 @@ are saved in the /tmp directory.
 Is the /tmp directory and the 'file' shell command on your OS? If not 
 some porting work is needed.
 
+It is built on top of the mail gem, which in my experience is about 10
+times faster at decoding large attachments if you us ruby 1.9 instead of 1.8.
+
 == REQUIREMENTS:
 
 Typedown is presently using the mail and uuidtools ruby gems.
@@ -38,6 +41,12 @@ when they are uncertain.
     mailfiles.each do |m|
         # Open mail stored in filename
         extract.parse m
+
+	# Some info about the mail
+	puts extract.to
+	puts extract.from
+	puts extract.subject
+
         # Traverse through the extracted attachments
 	extract.files.each do |f|
 	    # Do something with the attachments
