@@ -34,12 +34,9 @@ module Attachments
       @last_parsed = filename
 
       # Load the email
-      m = File.read(filename)
-      begin
-        m.force_encoding("UTF-8")
-      rescue
-        # force_encoding not supported in ruby 1.8
-      end
+      file = File.new(filename, "rb")
+      m = file.read()
+      file.close()
       @mail = Mail.new(m)
 
       # Parse parts recursively until it is not multipart
