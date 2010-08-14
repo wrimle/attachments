@@ -70,11 +70,19 @@ class TestAttachments < Test::Unit::TestCase
   context "UTF-8 and text/plain and image attachment" do
     setup do
       @extract = Attachments::Extract.new [ "text/plain", "image/jpeg" ]
-      @extract.parse "./test/data/mail_0001.eml"
+      @extract.parse "./test/data/mail_0002.eml"
     end
 
     teardown do
       @extract.close
+    end
+
+
+    should "not modify image" do
+      tmpfile = @extract.files[1][:tmpfile]
+
+      isIdentical = FileUtils::compare_file(tmpfile, "test/data/mail_0002.jpg")
+      assert(isIdentical)
     end
   end
 end
