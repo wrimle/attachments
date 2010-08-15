@@ -18,7 +18,7 @@ times faster at decoding large attachments if you us ruby 1.9 instead of 1.8.
 
 == REQUIREMENTS:
 
-Typedown is presently using the mail and uuidtools ruby gems.
+Attachments is presently using the mail and uuidtools ruby gems.
 It uses the 'file' shell command from filemagic to decide mime types
 when they are uncertain.
 
