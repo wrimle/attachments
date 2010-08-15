@@ -31,13 +31,22 @@ module Attachments
     end
 
     def parse filename
+      parse_file filename
+    end
+
+    def parse_file filename
       @last_parsed = filename
 
-      # Load the email
+      # Load the email as binary to avoid encoding exceptions
       file = File.new(filename, "rb")
-      m = file.read()
+      raw_mail_data = file.read()
       file.close()
-      @mail = Mail.new(m)
+
+      parse_data raw_mail_data
+    end
+
+    def parse_data raw_mail_data
+      @mail = Mail.new(raw_mail_data)
 
       # Parse parts recursively until it is not multipart
       # Ignore types that are not suited for forwarding
@@ -54,6 +63,18 @@ module Attachments
 
     def subject
       (@mail && @mail.subject) || nil
+    end
+
+    def text_body
+      (@mail && @mail.text_part.body.decoded) || nil
+    end
+
+    def html_body
+      (@mail && @mail.html_part.body.decoded) || nil
+    end
+
+    def mail
+      @mail
     end
 
     def name
