@@ -69,7 +69,8 @@ module Attachments
       if(@mail && @mail.text_part && @mail.text_part.body)
         m = @mail.text_part.body.decoded
         charset = @mail.text_part.charset
-        charset ? Iconv.conv("utf-8", charset, m) : m
+        text = charset ? Iconv.conv("utf-8", charset, m) : m
+        (text.respond_to? :force_encoding) ? text.force_encoding("utf-8") : text
       else
         nil
       end
