@@ -13,15 +13,22 @@ class TestAttachments < Test::Unit::TestCase
       @extract.close
     end
 
-    should "parse text/plain + text/html" do
-      assert_nothing_raised do
-        @extract.parse "./test/data/mail_0001.eml"
+    should "parse test mails without raising exceptions" do
+      Dir.glob("./test/data/mail_*.eml") do |filename|
+        assert_nothing_raised do
+          @extract.parse_file filename
+        end
       end
     end
 
-    should "parse text/plain with UTF-8 and image/jpeg" do
-      assert_nothing_raised do
-        @extract.parse "./test/data/mail_0002.eml"
+    should "return valid encoding in all text bodies" do
+      return unless "".respond_to?(:valid_encoding?)
+
+      Dir.glob("./test/data/mail_*.eml") do |filename|
+        assert_nothing_raised do
+          m = @extract.parse_file filename
+          assert m.text_body.valid_encoding?
+        end
       end
     end
   end
