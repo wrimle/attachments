@@ -26,8 +26,8 @@ class TestAttachments < Test::Unit::TestCase
 
       Dir.glob("./test/data/mail_*.eml") do |filename|
         assert_nothing_raised do
-          m = @extract.parse_file filename
-          assert m.text_body.valid_encoding?
+          @extract.parse_file filename
+          assert @extract.text_body.valid_encoding?
         end
       end
     end
