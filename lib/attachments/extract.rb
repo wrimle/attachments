@@ -66,11 +66,23 @@ module Attachments
     end
 
     def text_body
-      (@mail && @mail.text_part.body.decoded) || nil
+      if(@mail && @mail.text_part && @mail.text_part.body)
+        m = @mail.text_part.body.decoded
+        charset = @mail.text_part.charset
+        charset ? Iconv.conv("utf-8", charset, m) : m
+      else
+        nil
+      end
     end
 
     def html_body
-      (@mail && @mail.html_part.body.decoded) || nil
+      if(@mail && @mail.text_part && @mail.text_part.body)
+        m = @mail.text_part.body.decoded
+        charset = @mail.text_part.charset
+        charset ? Iconv.conv("utf-8", charset, m) : m
+      else
+        nil
+      end
     end
 
     def mail

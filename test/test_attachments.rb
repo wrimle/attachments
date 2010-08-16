@@ -87,5 +87,37 @@ class TestAttachments < Test::Unit::TestCase
       assert(isIdentical)
     end
   end
+
+  context "convenience accessors" do
+    setup do
+      @extract = Attachments::Extract.new [ "text/plain", "image/jpeg" ]
+      @extract.parse "./test/data/mail_0001.eml"
+    end
+
+    teardown do
+      @extract.close
+    end
+
+    should "not raise exceptions" do
+      assert_nothing_raised do
+        @extract.text_body
+      end
+      assert_nothing_raised do
+        @extract.html_body
+      end
+      assert_nothing_raised do
+        @extract.subject
+      end
+      assert_nothing_raised do
+        @extract.to
+      end
+      assert_nothing_raised do
+        @extract.from
+      end
+      assert_nothing_raised do
+        @extract.mail
+      end
+    end
+  end
 end
 
