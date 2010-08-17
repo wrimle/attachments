@@ -16,6 +16,16 @@ some porting work is needed.
 It is built on top of the mail gem, which in my experience is about 10
 times faster at decoding large attachments if you us ruby 1.9 instead of 1.8.
 
+== NEW STUFF:
+
+Version 0.0.9
+ + Pass raw mail data into to Extract#parse({:content => c})
+ + Pass stream to Extract#parse({:stream => s})
+
+Version 0.0.8
+ + Extract#text_body will try to convert the text_part to utf-8, 
+   and (for ruby>=1.9) ensure utf-8 encoding on the returned string
+
 == REQUIREMENTS:
 
 Attachments is presently using the mail and uuidtools ruby gems.
@@ -41,11 +51,25 @@ when they are uncertain.
     mailfiles.each do |m|
         # Open mail stored in filename
         extract.parse m
-
+	# Or use hash.
+	# extract.parse({ :filename => m })
+	# Parse raw data or stream instead 
+	# (forcing binary encoding/stream is a good idea)	
+	# extract.parse({ :content => c })
+	# extract.parse({ :stream => s })
+	
 	# Some info about the mail
 	puts extract.to
 	puts extract.from
 	puts extract.subject
+
+	# This will ask the mail gem for the text body,
+	# try to convert it to utf-8 from the encoding
+	# defined in the mail and (if ruby>=1.9) force utf-8
+	# encoding on the returned string. This may be useful
+	# if you want to do markdown to html processing or
+	# similar on the mail before forwarding it
+	puts extract.text_body
 
         # Traverse through the extracted attachments
 	extract.files.each do |f|
