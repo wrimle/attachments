@@ -30,19 +30,34 @@ module Attachments
       reset
     end
 
-    def parse filename
-      parse_file filename
+    def parse filename_or_hash
+      hash = case
+             when filename_or_hash.is_a?(String) then
+               { :filename => filename_or_hash }
+             when filename_or_hash.is_a?(Hash) then
+               filename_or_hash
+             else
+               {}
+             end
+
+      content = case
+                when hash[:filename] then
+                  read_file(hash[:filename])
+                when hash[:content] then
+                  hash[:content]
+                when hash[:stream] then
+                  hash[:stream].read()
+                else
+                  nil
+                end
+
+      parse_data content if content
     end
 
     def parse_file filename
       @last_parsed = filename
-
-      # Load the email as binary to avoid encoding exceptions
-      file = File.new(filename, "rb")
-      raw_mail_data = file.read()
-      file.close()
-
-      parse_data raw_mail_data
+      content = read_file filename
+      parse_data content
     end
 
     def parse_data raw_mail_data
@@ -110,6 +125,14 @@ module Attachments
       @name = nil
       @mail = nil
       @files = []
+    end
+
+    def read_file filename
+      # Load the email as binary to avoid encoding exceptions
+      file = File.new(filename, "rb")
+      content = file.read()
+      file.close()
+      content
     end
 
     def parse_part mail
