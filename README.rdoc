@@ -19,12 +19,13 @@ times faster at decoding large attachments if you us ruby 1.9 instead of 1.8.
 == NEW STUFF:
 
 Version 0.0.9
- + Pass raw mail data into to Extract#parse({:content => c})
- + Pass stream to Extract#parse({:stream => s})
+
+* Pass raw mail data into to Extract#parse({:content => c})
+* Pass stream to Extract#parse({:stream => s})
 
 Version 0.0.8
- + Extract#text_body will try to convert the text_part to utf-8, 
-   and (for ruby>=1.9) ensure utf-8 encoding on the returned string
+* Extract#text_body will try to convert the text_part to utf-8, 
+  and (for ruby>=1.9) ensure utf-8 encoding on the returned string
 
 == REQUIREMENTS:
 
