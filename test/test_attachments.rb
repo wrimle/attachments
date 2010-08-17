@@ -4,13 +4,22 @@ require 'helper'
 require 'iconv'
 
 class TestAttachments < Test::Unit::TestCase
+  def compare_extractors a, b
+    (0...a.files.length).each do |i|
+      tmp_a = a.files[i][:tmpfile]
+      tmp_b = b.files[i][:tmpfile]
+
+      isIdentical = FileUtils::compare_file(tmp_a, tmp_b)
+      assert(isIdentical)
+    end
+  end
+
   context "Parse test cases without crashes" do
     setup do
       @extract = Attachments::Extract.new [ "text/plain", "image/jpeg" ]
     end
 
     teardown do
-      @extract.close
     end
 
     should "parse test mails without raising exceptions" do
@@ -18,6 +27,7 @@ class TestAttachments < Test::Unit::TestCase
         assert_nothing_raised do
           @extract.parse_file filename
         end
+        @extract.close
       end
     end
 
@@ -25,10 +35,9 @@ class TestAttachments < Test::Unit::TestCase
       return unless "".respond_to?(:valid_encoding?)
 
       Dir.glob("./test/data/mail_*.eml") do |filename|
-        assert_nothing_raised do
-          @extract.parse_file filename
-          assert @extract.text_body.valid_encoding?
-        end
+        @extract.parse_file filename
+        assert @extract.text_body.valid_encoding?
+        @extract.close
       end
     end
   end
@@ -123,6 +132,79 @@ class TestAttachments < Test::Unit::TestCase
       end
       assert_nothing_raised do
         @extract.mail
+      end
+    end
+  end
+
+  context "Parse parameters" do
+    setup do
+      @a = Attachments::Extract.new [ "text/plain", "image/jpeg" ]
+      @b = Attachments::Extract.new [ "text/plain", "image/jpeg" ]
+    end
+
+    teardown do
+    end
+
+
+    should "handle straight filename" do
+      Dir.glob("./test/data/mail_*.eml") do |filename|
+        assert_nothing_raised do
+          @a.parse_file filename
+          @b.parse filename
+
+          compare_extractors(@a, @b)
+        end
+        @a.close
+        @b.close
+      end
+    end
+
+
+    should "handle filename in hash" do
+      Dir.glob("./test/data/mail_*.eml") do |filename|
+        assert_nothing_raised do
+          @a.parse_file filename
+          @b.parse({ :filename => filename })
+
+          compare_extractors(@a, @b)
+        end
+        @a.close
+        @b.close
+      end
+    end
+
+
+    should "handle content in hash" do
+      Dir.glob("./test/data/mail_*.eml") do |filename|
+        assert_nothing_raised do
+          @a.parse_file filename
+
+          f = File.new(filename, "rb")
+          content = f.read()
+          f.close 
+          @b.parse({ :content => content })
+
+          compare_extractors(@a, @b)
+        end
+        @a.close
+        @b.close
+      end
+    end
+
+
+    should "handle stream in hash" do
+      Dir.glob("./test/data/mail_*.eml") do |filename|
+        assert_nothing_raised do
+          @a.parse_file filename
+
+          f = File.new(filename, "rb")
+          @b.parse({ :stream => f })
+          f.close 
+
+          compare_extractors(@a, @b)
+        end
+        @a.close
+        @b.close
       end
     end
   end
