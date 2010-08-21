@@ -18,6 +18,7 @@ module Attachments
   class Extract
     UNCERTAIN_TYPES = [ "application/octet-stream" ].to_set
 
+
     def initialize include_types = [ "text/plain" ]
       @include_types = include_types
       reset
@@ -84,6 +85,11 @@ module Attachments
       if(@mail && @mail.text_part && @mail.text_part.body)
         m = @mail.text_part.body.decoded
         charset = @mail.text_part.charset
+        text = charset ? Iconv.conv("utf-8", charset, m) : m
+        (text.respond_to? :force_encoding) ? text.force_encoding("utf-8") : text
+      elsif(@mail && @mail.body && @mail.content_type.to_s.include?("text/plain"))
+        m = @mail.body.decoded
+        charset = @mail.charset
         text = charset ? Iconv.conv("utf-8", charset, m) : m
         (text.respond_to? :force_encoding) ? text.force_encoding("utf-8") : text
       else
