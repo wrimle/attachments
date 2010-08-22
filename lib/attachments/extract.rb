@@ -52,7 +52,11 @@ module Attachments
                   nil
                 end
 
-      parse_data content if content
+      if content
+        parse_data content 
+      elsif hash[:mail]
+        parse_mail hash[:mail]
+      end
     end
 
     def parse_file filename
@@ -62,8 +66,12 @@ module Attachments
     end
 
     def parse_data raw_mail_data
-      @mail = Mail.new(raw_mail_data)
+      mail = Mail.new(raw_mail_data)
+      parse_mail mail
+    end
 
+    def parse_mail mail
+      @mail = mail
       # Parse parts recursively until it is not multipart
       # Ignore types that are not suited for forwarding
       parse_part @mail
