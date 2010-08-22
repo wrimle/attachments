@@ -18,6 +18,10 @@ times faster at decoding large attachments if you us ruby 1.9 instead of 1.8.
 
 == NEW STUFF:
 
+Version 0.0.11
+
+* A message object from the mail gem library may now be passed to parse
+
 Version 0.0.10
 
 * Find text body even if the mail is not multipart
