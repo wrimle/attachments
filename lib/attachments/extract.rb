@@ -86,7 +86,13 @@ module Attachments
     end
 
     def subject
-      (@mail && @mail.subject) || nil
+      s = (@mail && @mail.subject) || nil
+      if s
+        charset = @mail.charset
+        charset ? Iconv.conv("utf-8", charset, s) : s
+      else
+        s
+      end
     end
 
     def text_body
