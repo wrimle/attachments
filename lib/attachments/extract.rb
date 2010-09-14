@@ -87,9 +87,8 @@ module Attachments
 
     def subject
       s = (@mail && @mail.subject) || nil
-      if s
-        charset = @mail.charset
-        charset ? Iconv.conv("utf-8", charset, s) : s
+      if s && s.respond_to?(:encode)
+        s.encode("utf-8")
       else
         s
       end
