@@ -4,12 +4,23 @@ require 'helper'
 require 'iconv'
 
 class TestAttachments < Test::Unit::TestCase
-  def compare_extractors a, b
+  def compare_extractors_old a, b
     (0...a.files.length).each do |i|
       tmp_a = a.files[i][:tmpfile]
       tmp_b = b.files[i][:tmpfile]
 
       isIdentical = FileUtils::compare_file(tmp_a, tmp_b)
+      assert(isIdentical)
+    end
+  end
+
+
+  def compare_extractors a, b
+    (0...a.files.length).each do |i|
+      tmp_a = a.files[i][:body]
+      tmp_b = b.files[i][:body]
+
+      isIdentical = (tmp_a === tmp_b)
       assert(isIdentical)
     end
   end
@@ -45,7 +56,7 @@ class TestAttachments < Test::Unit::TestCase
 
   context "Just text text/plain and text/html" do
     setup do
-      @extract = Attachments::Extract.new [ "text/plain" ]
+      @extract = Attachments::Extract.new [ "text/plain" ], false
       @extract.parse "./test/data/mail_0001.eml"
     end
 
@@ -87,7 +98,7 @@ class TestAttachments < Test::Unit::TestCase
 
   context "UTF-8 and text/plain and image attachment" do
     setup do
-      @extract = Attachments::Extract.new [ "text/plain", "image/jpeg" ]
+      @extract = Attachments::Extract.new [ "text/plain", "image/jpeg" ], false
       @extract.parse "./test/data/mail_0002.eml"
     end
 

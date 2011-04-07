@@ -5,6 +5,7 @@ require 'uuidtools'
 require 'fileutils'
 require 'mail'
 require 'iconv'
+require 'set'
 
 
 module Attachments
@@ -19,14 +20,15 @@ module Attachments
     UNCERTAIN_TYPES = [ "application/octet-stream" ].to_set
 
 
-    def initialize include_types = [ "text/plain" ]
+    def initialize include_types = [ "text/plain" ], cache_in_memory = true
       @include_types = include_types
+      @cache_in_memory = cache_in_memory
       reset
     end
 
     def close
       files.each do |f|
-        FileUtils::rm(f[:tmpfile])
+        FileUtils::rm(f[:tmpfile]) unless @cache_in_memory
       end
       reset
     end
@@ -95,7 +97,7 @@ module Attachments
     end
 
     def text_body
-      if(@mail && @mail.text_part && @mail.text_part.body)
+      if(@mail &&  @mail.text_part && @mail.text_part.body)
         m = @mail.text_part.body.decoded
         charset = @mail.text_part.charset
         text = charset ? Iconv.conv("utf-8", charset, m) : m
@@ -173,14 +175,7 @@ module Attachments
         @name = mail.content_type_parameters['name'] || "unnamed"
         @name.gsub! /[^\w\.\-]/, '_' # Sanitize
 
-        # Make it unique
-        uuid = UUIDTools::UUID.random_create.hexdigest
-
-        # The filename used for storage
-        filename = "#{@name}.#{uuid}"
-        filepath = "/tmp/#{filename}" 
-
-
+        # Extract body
         body = case ct
                when "text/plain" then
                  m = mail.body.decoded
@@ -207,24 +202,38 @@ module Attachments
                  mail.body.decoded
                end
 
-        # Save part as it is of a supported type
-        f = File.new(filepath, "wb")
-        f.write(body)
-        f.close
+        # Make it unique
+        uuid = UUIDTools::UUID.random_create.hexdigest
 
-        unless File.exists?(filepath)
-          raise Error::SaveFailed, "Save failed for ", filepath, "\n"
-          return
+        # The filename used for storage
+        filename = "#{@name}.#{uuid}"
+
+        if @cache_in_memory
+          mime_type = ct
+          @files << { :name => @name, :body => body, :save_as => name, :upload_to => filename, :mime_type => mime_type  }
+        else
+          # Tmp file
+          filepath = "/tmp/#{filename}" 
+
+          # Save part as it is of a supported type
+          f = File.new(filepath, "wb")
+          f.write(body)
+          f.close
+
+          unless File.exists?(filepath)
+            raise Error::SaveFailed, "Save failed for ", filepath, "\n"
+            return
+          end
+
+          # Sort out the mime type
+          mime_type = ct
+          if(UNCERTAIN_TYPES.include? mime_type)
+            mime_type = FileMagic::mime filename
+          end
+
+          # Save meta-data for further processing
+          @files << { :name => @name, :tmpfile => filepath, :save_as => name, :upload_to => filename, :mime_type => mime_type  }
         end
-
-        # Sort out the mime type
-        mime_type = ct
-        if(UNCERTAIN_TYPES.include? mime_type)
-          mime_type = FileMagic::mime filename
-        end
-
-        # Save meta-data for further processing
-        @files << { :name => @name, :tmpfile => filepath, :save_as => name, :upload_to => filename, :mime_type => mime_type  }
       end
     end
   end

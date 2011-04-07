@@ -18,6 +18,12 @@ times faster at decoding large attachments if you us ruby 1.9 instead of 1.8.
 
 == NEW STUFF:
 
+Version 0.0.14
+
+* Support in-memory storage of attachments to support processing on
+  systems without access to file system (i.e. Heroku + Cloudmailin)
+* Include set in extract.rb to avoid exception in ruby 1.9.2
+
 Version 0.0.11
 
 * Convert the subject to utf-8
@@ -90,7 +96,7 @@ when they are uncertain.
 	    puts f.inspect
 	    case f[:mime_type]
             when "text/plain" then
-                puts File.read(f[:tmpfile])
+                puts f[:body] || File.read(f[:tmpfile])
 	    end
         end
 	# Remove tmp files and prepare for new parsing action
