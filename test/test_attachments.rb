@@ -17,8 +17,8 @@ class TestAttachments < Test::Unit::TestCase
 
   def compare_extractors a, b
     (0...a.files.length).each do |i|
-      tmp_a = a.files[i][:body]
-      tmp_b = b.files[i][:body]
+      tmp_a = a.files[i][:body] || File.read(a.files[i][:tmpfile])
+      tmp_b = b.files[i][:body] || File.read(a.files[i][:tmpfile])
 
       isIdentical = (tmp_a === tmp_b)
       assert(isIdentical)
@@ -27,7 +27,7 @@ class TestAttachments < Test::Unit::TestCase
 
   context "Parse test cases without crashes" do
     setup do
-      @extract = Attachments::Extract.new [ "text/plain", "image/jpeg" ]
+      @extract = Attachments::Extract.new [ "text/plain", "image/jpeg" ], { :cache_in_memory => true }
     end
 
     teardown do
@@ -56,7 +56,7 @@ class TestAttachments < Test::Unit::TestCase
 
   context "Just text text/plain and text/html" do
     setup do
-      @extract = Attachments::Extract.new [ "text/plain" ], false
+      @extract = Attachments::Extract.new [ "text/plain" ], { :cache_in_memory => false }
       @extract.parse "./test/data/mail_0001.eml"
     end
 
@@ -98,7 +98,7 @@ class TestAttachments < Test::Unit::TestCase
 
   context "UTF-8 and text/plain and image attachment" do
     setup do
-      @extract = Attachments::Extract.new [ "text/plain", "image/jpeg" ], false
+      @extract = Attachments::Extract.new [ "text/plain", "image/jpeg" ], { :cache_in_memory => false }
       @extract.parse "./test/data/mail_0002.eml"
     end
 
@@ -117,7 +117,7 @@ class TestAttachments < Test::Unit::TestCase
 
   context "convenience accessors" do
     setup do
-      @extract = Attachments::Extract.new [ "text/plain", "image/jpeg" ]
+      @extract = Attachments::Extract.new [ "text/plain", "image/jpeg" ], { :cache_in_memory => true }
       @extract.parse "./test/data/mail_0001.eml"
     end
 
@@ -149,8 +149,8 @@ class TestAttachments < Test::Unit::TestCase
 
   context "Parse parameters" do
     setup do
-      @a = Attachments::Extract.new [ "text/plain", "image/jpeg" ]
-      @b = Attachments::Extract.new [ "text/plain", "image/jpeg" ]
+      @a = Attachments::Extract.new [ "text/plain", "image/jpeg" ], { :cache_in_memory => true }
+      @b = Attachments::Extract.new [ "text/plain", "image/jpeg" ], { :cache_in_memory => true }
     end
 
     teardown do

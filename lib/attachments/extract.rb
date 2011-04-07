@@ -20,9 +20,9 @@ module Attachments
     UNCERTAIN_TYPES = [ "application/octet-stream" ].to_set
 
 
-    def initialize include_types = [ "text/plain" ], cache_in_memory = true
+    def initialize include_types = [ "text/plain" ], options = { :cache_in_memory => false }
       @include_types = include_types
-      @cache_in_memory = cache_in_memory
+      @cache_in_memory = options [ :cache_in_memory ] || false
       reset
     end
 
