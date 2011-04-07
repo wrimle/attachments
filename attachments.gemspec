@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "attachments.gemspec",
     "lib/attachments.rb",
     "lib/attachments/extract.rb",
     "lib/attachments/filemagic.rb",
